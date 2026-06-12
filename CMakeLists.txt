@@ -2,11 +2,12 @@ cmake_minimum_required(VERSION 3.10.2)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 project(takeoff_and_land)
 
 add_executable(takeoff_and_land
-	takeoff_and_land.cpp
+	src/takeoff_and_land.cpp
 	)
 
 find_package(MAVSDK REQUIRED)

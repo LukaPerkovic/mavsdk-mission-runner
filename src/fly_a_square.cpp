@@ -4,9 +4,13 @@
 #include <iostream>
 #include <mavsdk/mavsdk.hpp>
 #include <mavsdk/plugins/action/action.hpp>
+#include <mavsdk/plugins/mission/mission.hpp>
 #include <mavsdk/plugins/telemetry/telemetry.hpp>
 #include <memory>
 #include <thread>
+
+#include "data_models/coordinates.hpp"
+#include "helpers/calculate_destination_coordinates.hpp"
 
 using namespace mavsdk;
 using std::chrono::seconds;
@@ -71,12 +75,72 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    while (telemetry.position().relative_altitude_m < 4.5f)
-    {
-        sleep_for(seconds(1));
-    }
 
-    sleep_for(seconds(10));
+    // ---- BEGIN SQUARE FLYING MISSION ----
+    
+    std::cout << "Creating mission...\n";
+
+    // Create destination points
+
+    Coords positionA {
+	    .latitude=telemetry.position().latitude_deg,
+            .longitude=telemetry.position().longitude_deg
+    };
+
+    Coords positionB = getDestinationCoords(positionA, 10, 90);
+    Coords positionC = getDestinationCoords(positionB, 10, 180);
+    Coords positionD = getDestinationCoords(positionC, 10, 270);
+
+    // Create mission items
+
+    auto mission = Mission{system};
+    std::vector<std::shared_ptr<MissionItem>> mission_items;
+
+    std::shared_ptr<MissionItem> pointB(new MissionItem());
+    pointB->latitude_deg = positionB.latitude;
+    pointB->latitude_deg = positionB.longitude;
+    mission_items.push_back(pointB);
+
+    std::shared_ptr<MissionItem> pointC(new MissionItem());
+    pointC->latitude_deg = positionC.latitude;
+    pointC->latitude_deg = positionC.longitude;
+    mission_items.push_back(pointC);
+
+    std::shared_ptr<MissionItem> pointD(new MissionItem());
+    pointD->latitude_deg = positionD.latitude;
+    pointD->latitude_deg = positionD.longitude;
+    mission_items.push_back(pointD);
+
+    std::shared_ptr<MissionItem> pointA(new MissionItem());
+    pointA->latitude_deg = positionA.latitude;
+    pointA->latitude_deg = positionA.longitude;
+    mission_items.push_back(pointA);
+
+    // Upload mission
+
+    std::cout << "Uploading mission...\n";
+    Mission::MissionPlan mission_plan{};
+    mission_plan.mission_items = mission_items;
+    const Mission::Result result = mission.upload_mission(mission_plan);
+
+    if (result != Mission::Result::Success)
+    {
+	    std::cout << "Mission upload failed (" << result << "), exiting.\n";
+	    return 1;
+    }
+    std::cout << "Mission uploaded.\n";
+
+    std::cout << "Starting mission...\n";
+
+    const Mission::Result start_result = mission.start_mission();
+
+    if (start_result != Mission::Result::Success)
+    {
+	    std::cout << "Mission start failed (" << start_result << "), exiting.\n";
+            return 1;
+    }
+    std::cout << "Mission started.\n";
+
 
     std::cout << "Landing...\n";
     const Action::Result land_result = action.land();

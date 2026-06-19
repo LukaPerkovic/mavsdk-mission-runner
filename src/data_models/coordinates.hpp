@@ -2,6 +2,6 @@
 
 struct Coords
 {
-    double longitude;
     double latitude;
+    double longitude;
 };

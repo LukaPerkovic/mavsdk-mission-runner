@@ -4,17 +4,27 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-project(takeoff_and_land)
-
-add_executable(takeoff_and_land
-	src/takeoff_and_land.cpp
-	)
+project(mavsdk-mission-runner)
 
 find_package(MAVSDK REQUIRED)
 
+# --- Take off and land program ---
+add_executable(takeoff_and_land
+	src/takeoff_and_land.cpp
+	)
 target_link_libraries(takeoff_and_land
 	MAVSDK::mavsdk
 	)
+
+
+# --- Fly a square program ---
+add_executable(fly_a_square
+	src/fly_a_square.cpp
+	)
+target_link_libraries(fly_a_square
+	MAVSDK::mavsdk
+	)
+
 
 if(NOT MVSC)
 	add_compile_options(takeoff_and_land PRIVATE -Wall -Wextra)

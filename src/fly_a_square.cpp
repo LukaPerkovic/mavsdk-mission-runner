@@ -93,27 +93,27 @@ int main(int argc, char **argv)
 
     // Create mission items
 
-    auto mission = Mission{system};
-    std::vector<std::shared_ptr<MissionItem>> mission_items;
+    auto mission = Mission{system.value()};
+    std::vector<std::shared_ptr<Mission::MissionItem>> mission_items;
 
-    std::shared_ptr<MissionItem> pointB(new MissionItem());
+    std::shared_ptr<Mission::MissionItem> pointB(new Mission::MissionItem());
     pointB->latitude_deg = positionB.latitude;
-    pointB->latitude_deg = positionB.longitude;
+    pointB->longitude_deg = positionB.longitude;
     mission_items.push_back(pointB);
 
-    std::shared_ptr<MissionItem> pointC(new MissionItem());
+    std::shared_ptr<Mission::MissionItem> pointC(new Mission::MissionItem());
     pointC->latitude_deg = positionC.latitude;
-    pointC->latitude_deg = positionC.longitude;
+    pointC->longitude_deg = positionC.longitude;
     mission_items.push_back(pointC);
 
-    std::shared_ptr<MissionItem> pointD(new MissionItem());
+    std::shared_ptr<Mission::MissionItem> pointD(new Mission::MissionItem());
     pointD->latitude_deg = positionD.latitude;
-    pointD->latitude_deg = positionD.longitude;
+    pointD->longitude_deg = positionD.longitude;
     mission_items.push_back(pointD);
 
-    std::shared_ptr<MissionItem> pointA(new MissionItem());
+    std::shared_ptr<Mission::MissionItem> pointA(new Mission::MissionItem());
     pointA->latitude_deg = positionA.latitude;
-    pointA->latitude_deg = positionA.longitude;
+    pointA->longitude_deg = positionA.longitude;
     mission_items.push_back(pointA);
 
     // Upload mission

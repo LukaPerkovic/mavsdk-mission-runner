@@ -1,7 +1,7 @@
 #include "calculate_destination_coordinates.hpp"
 #include <GeographicLib/Geodesic.hpp>
 
-Coords getDestinationCoords(Coords startPosition, double azimuth,
+Coords getDestinationCoords(const Coords& startPosition, double azimuth,
                             double distance)
 {
 

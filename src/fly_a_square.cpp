@@ -18,6 +18,11 @@ using std::this_thread::sleep_for;
 
 int main(int argc, char **argv)
 {
+    if (argc < 2)
+    {
+        std::cerr << "Usage: " << argv[0] << " <connection_url>\n";
+        return 1;
+    }
 
     Mavsdk mavsdk{Mavsdk::Configuration{ComponentType::GroundStation}};
     ConnectionResult connection_result = mavsdk.add_any_connection(argv[1]);
@@ -41,7 +46,7 @@ int main(int argc, char **argv)
     const auto set_rate_result = telemetry.set_rate_position(5.0);
     if (set_rate_result != Telemetry::Result::Success)
     {
-        std::cerr << "Settin rate failed: " << set_rate_result << '\n';
+        std::cerr << "Setting rate failed: " << set_rate_result << '\n';
         return 1;
     }
 
@@ -82,39 +87,38 @@ int main(int argc, char **argv)
 
     // Create destination points
 
+    const auto pos = telemetry.position();
+
     Coords positionA {
-	    .latitude=telemetry.position().latitude_deg,
-            .longitude=telemetry.position().longitude_deg
+	    .latitude=pos.latitude_deg,
+            .longitude=pos.longitude_deg
     };
 
-    Coords positionB = getDestinationCoords(positionA, 10, 90);
-    Coords positionC = getDestinationCoords(positionB, 10, 180);
-    Coords positionD = getDestinationCoords(positionC, 10, 270);
+    Coords positionB = getDestinationCoords(positionA, 90, 10);
+    Coords positionC = getDestinationCoords(positionB, 180, 10);
+    Coords positionD = getDestinationCoords(positionC, 270, 10);
 
-    // Create mission items
 
     auto mission = Mission{system.value()};
-    std::vector<std::shared_ptr<Mission::MissionItem>> mission_items;
 
-    std::shared_ptr<Mission::MissionItem> pointB(new Mission::MissionItem());
-    pointB->latitude_deg = positionB.latitude;
-    pointB->longitude_deg = positionB.longitude;
-    mission_items.push_back(pointB);
+    // Create mission items
+    std::vector<Mission::MissionItem> mission_items;
 
-    std::shared_ptr<Mission::MissionItem> pointC(new Mission::MissionItem());
-    pointC->latitude_deg = positionC.latitude;
-    pointC->longitude_deg = positionC.longitude;
-    mission_items.push_back(pointC);
+    auto make_mission_item = [](const Coords& coords)
+    {
+        Mission::MissionItem item{};
+        item.latitude_deg = coords.latitude;
+        item.longitude_deg = coords.longitude;
+        item.relative_altitude_m = 5.0f;
+        item.speed_m_s = 2.0f;
+        return item;
 
-    std::shared_ptr<Mission::MissionItem> pointD(new Mission::MissionItem());
-    pointD->latitude_deg = positionD.latitude;
-    pointD->longitude_deg = positionD.longitude;
-    mission_items.push_back(pointD);
+    };
 
-    std::shared_ptr<Mission::MissionItem> pointA(new Mission::MissionItem());
-    pointA->latitude_deg = positionA.latitude;
-    pointA->longitude_deg = positionA.longitude;
-    mission_items.push_back(pointA);
+    mission_items.push_back(make_mission_item(positionB));
+    mission_items.push_back(make_mission_item(positionC));
+    mission_items.push_back(make_mission_item(positionD));
+    mission_items.push_back(make_mission_item(positionA));
 
     // Upload mission
 
@@ -132,6 +136,12 @@ int main(int argc, char **argv)
 
     std::cout << "Starting mission...\n";
 
+    mission.subscribe_mission_progress([](Mission::MissionProgress progress)
+    {
+        std::cout << "Progress: " << progress.current << "/" << progress.total << "\n";
+
+    });
+
     const Mission::Result start_result = mission.start_mission();
 
     if (start_result != Mission::Result::Success)
@@ -140,6 +150,16 @@ int main(int argc, char **argv)
             return 1;
     }
     std::cout << "Mission started.\n";
+
+
+
+    std::cout << "Waiting for mission to complete...\n";
+    while (!mission.is_mission_finished().second)
+    {
+        sleep_for(seconds(1));
+    }
+    std::cout << "Mission complete!\n";
+
 
 
     std::cout << "Landing...\n";

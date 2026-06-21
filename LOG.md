@@ -2,6 +2,22 @@
 
 Notes about done work, missed plans, and next targets structured by weeks. Interval for preceeding week marked on each Sunday
 
+## 21.06.2026.
+
+### What shipped
+- Working code that flies drone in square.
+- Helper script for calculating destination coordinates based on azimuth (direction) and distance.
+
+### What slipped
+- Failed to mee all the goals from previous target.
+- Had to fix the conflicts between takeoff() and start_mission(). Kept receiving denied permissions.
+- Added library (GeographicLib) had different CMake approach that neeeded to be solved.
+
+### Next target
+- Producing logs
+- YAML configs
+
+
 ## 13.06.2026.
 
 ### What shipped

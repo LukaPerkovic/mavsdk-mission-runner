@@ -65,7 +65,6 @@ int main(int argc, char **argv)
         sleep_for(seconds(1));
     }
 
-    // Now position is reliable
     const auto pos = telemetry.position();
     std::cout << "Home-ish position: " << pos.latitude_deg
               << ", " << pos.longitude_deg << "\n";
@@ -76,11 +75,26 @@ int main(int argc, char **argv)
         return 1;
     }
 
+
+    if (navigation_mode == "relative")
+    {
+
     Coords positionA{ .latitude = pos.latitude_deg,
                       .longitude = pos.longitude_deg };
     Coords positionB = getDestinationCoords(positionA, 90, 10);
     Coords positionC = getDestinationCoords(positionB, 180, 10);
     Coords positionD = getDestinationCoords(positionC, 270, 10);
+
+    }
+    else if (navigation_mode == "absolute")
+    {
+
+    // Coords positionA get from YAML
+    // Coords positionB get from YAML
+    // Coords positionC get from YAML
+    // Coords positionD get from YAML
+
+    }
 
     auto mission = Mission{system.value()};
 

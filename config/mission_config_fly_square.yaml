@@ -1,0 +1,29 @@
+mission:
+  takeoff-altitude: 5.0f
+  waypoints:
+    relative:
+      A:
+        distance_m: 0
+        azimuth_deg: 0
+      B: 
+        distance_m: 10
+        azimuth_deg: 90
+      C:
+        distance_m: 10
+        azimuth_deg: 180
+      D:
+        distance_m: 10
+        azimuth_deg: 270
+    absolute:
+      A:
+        latitude_deg: 0
+        longitude_deg: 0
+      B:
+        latitude_deg: 0
+        longitude_Deg: 0
+      C:
+        latitude_deg: 0
+        longitude_deg: 0
+      D:
+        latitude_deg: 0
+        longitude_deg: 0

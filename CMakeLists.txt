@@ -9,6 +9,7 @@ project(mavsdk-mission-runner)
 list(APPEND CMAKE_MODULE_PATH "/usr/share/cmake/geographiclib")
 
 find_package(MAVSDK REQUIRED)
+find_package(yaml-cpp REQUIRED)
 find_package(GeographicLib REQUIRED)
 
 # --- Take off and land program ---
@@ -31,6 +32,7 @@ target_include_directories(fly_a_square PRIVATE
 
 target_link_libraries(fly_a_square 
 	MAVSDK::mavsdk
+	yaml-cpp
 	${GeographicLib_LIBRARIES}
 	)
 

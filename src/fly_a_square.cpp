@@ -11,6 +11,7 @@
 
 #include "data_models/coordinates.hpp"
 #include "helpers/calculate_destination_coordinates.hpp"
+#include "helpers/mission_config.hpp"
 
 using namespace mavsdk;
 using std::chrono::seconds;
@@ -76,43 +77,71 @@ int main(int argc, char **argv)
     }
 
 
-    if (navigation_mode == "relative")
+    MissionConfig cfg = load_mission_config("config/mission_config_fly_a_square.yaml");
+
+    if (argc > 2)
+    {
+        std::string nav_mode_arg = std::string(argv[2]);
+      
+        if (nav_mode_arg != "relative" && nav_mode_arg != "absolute")
+        {
+            std::cerr << "Unrecognized position argument on index [2]" << nav_mode_arg << '\n';
+            return 1;
+        }
+        
+        cfg.navidation_mode = nav_mode_arg;
+    }
+
+    std::vector<Coords> waypoints;
+
+    if (cfg.navigation_mode == "relative")
     {
 
-    Coords positionA{ .latitude = pos.latitude_deg,
-                      .longitude = pos.longitude_deg };
-    Coords positionB = getDestinationCoords(positionA, 90, 10);
-    Coords positionC = getDestinationCoords(positionB, 180, 10);
-    Coords positionD = getDestinationCoords(positionC, 270, 10);
+        Coords current{ .latitude = pos.latitude_deg,
+                        .longitude = pos.longitude_deg };
+
+        for (const auto& wp: cfg.relative_waypoints)
+        {
+            if (wp.distance_m == 0.0)
+            {
+                // Current; Waypoint A
+                waypoints.push_back(current);
+
+            }
+            else
+            {
+                current = getDestinationCoords(current, wp.azimuth_deg, wp.distance_m);
+                waypoints.push_back(current);
+            }
+        }
+    }
+    else if (cfg.navigation_mode == "absolute")
+    {
+
+        waypoints = cfg.absolute_waypoints;
 
     }
-    else if (navigation_mode == "absolute")
+    else
     {
-
-    // Coords positionA get from YAML
-    // Coords positionB get from YAML
-    // Coords positionC get from YAML
-    // Coords positionD get from YAML
-
+        std::cerr << "Unknown navigation_mode: " << cfg.navigation_mode << '\n';
+        return 1;
     }
 
     auto mission = Mission{system.value()};
 
-    auto make_mission_item = [](const Coords& coords)
+    auto make_mission_item = [&cfg](const Coords& coords)
     {
         Mission::MissionItem item{};
         item.latitude_deg        = coords.latitude;
         item.longitude_deg       = coords.longitude;
-        item.relative_altitude_m = 5.0f;
-        item.speed_m_s           = 2.0f;
+        item.relative_altitude_m = cfg.takeoff_altitude_m;
+        item.speed_m_s           = cfg.speed_m_s;
         return item;
     };
 
     std::vector<Mission::MissionItem> mission_items;
-    mission_items.push_back(make_mission_item(positionB));
-    mission_items.push_back(make_mission_item(positionC));
-    mission_items.push_back(make_mission_item(positionD));
-    mission_items.push_back(make_mission_item(positionA));
+    for (const auto& wp: waypoints)
+        mission_items.push_back(make_mission_item(wp));
 
     Mission::MissionPlan mission_plan{};
     mission_plan.mission_items = mission_items;

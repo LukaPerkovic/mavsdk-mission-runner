@@ -97,16 +97,15 @@ int main(int argc, char **argv)
     if (cfg.navigation_mode == "relative")
     {
 
-        Coords current{ .latitude = pos.latitude_deg,
+        Coords startPosition{ .latitude = pos.latitude_deg,
                         .longitude = pos.longitude_deg };
-
+ 	Coords current = startPosition;
         for (const auto& wp: cfg.relative_waypoints)
         {
             if (wp.distance_m == 0.0)
             {
                 // Current; Waypoint A
                 waypoints.push_back(current);
-
             }
             else
             {
@@ -114,6 +113,8 @@ int main(int argc, char **argv)
                 waypoints.push_back(current);
             }
         }
+	// Return to original position, complete the square
+	waypoints.push_back(startPosition);
     }
     else if (cfg.navigation_mode == "absolute")
     {

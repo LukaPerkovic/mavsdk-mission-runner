@@ -25,6 +25,7 @@ target_link_libraries(takeoff_and_land
 add_executable(fly_a_square
 	src/fly_a_square.cpp
 	src/helpers/calculate_destination_coordinates.cpp
+	src/helpers/mission_config.cpp
 	)
 target_include_directories(fly_a_square PRIVATE
 	${GeographicLib_INCLUDE_DIRS}

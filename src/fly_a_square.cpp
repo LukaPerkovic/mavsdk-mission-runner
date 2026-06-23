@@ -89,7 +89,7 @@ int main(int argc, char **argv)
             return 1;
         }
         
-        cfg.navidation_mode = nav_mode_arg;
+        cfg.navigation_mode = nav_mode_arg;
     }
 
     std::vector<Coords> waypoints;

@@ -62,14 +62,13 @@ int main(int argc, char **argv)
             std:: cout << "Battery level: " << bat.remaining_percent  << "%\n";
         });
     
-    std::atomic<bool> failsafe_triggered(false);
-    telemetry.subscribe_flight_mode(
-        [&failsafe_triggered](Telemetry::FlightMode flight_mode) {
-            if (flight_mode != Telemetry::FlightMode::Mission &&
-                flight_mode != Telemetry::FlightMode::Takeoff) {
-                    failsafe_triggered = true;
-                }
+    std::atomic<Telemetry::FlightMode> current_mode{
+        Telemetry::FlightMode::Unknown};
 
+
+    telemetry.subscribe_flight_mode(
+        [&current_mode](Telemetry::FlightMode flight_mode) {
+            current_mode = flight_mode;
         });    
 
     while (!telemetry.health_all_ok())
@@ -187,17 +186,32 @@ int main(int argc, char **argv)
 
     while (!mission.is_mission_finished().second)
     {
-        if (failsafe_triggered)
+        const Telemetry::FlightMode m = current_mode.load()
+
+        if (m != Telemetry::FlightMode::Mission &&
+            m != Telemetry::FlightMode::Takeoff &&
+            m != Telemetry::FlightMode::Unknown)
         {
-            aborted_by_failsafe = true;
-            break;
+            std::cerr << "Unknown flight mode during missions: " << m << '\n';
         }
+
         sleep_for(seconds(1));
     }
 
     if (aborted_by_failsafe)
     {
         std::cerr << "Mission aborted: failsafe engaged. PX4 took control. \n";
+        std::cerr << "Monitoring until the vehicle is safely on the ground...\n";
+        
+        while (telemetry.in_air())
+        {
+            std::cout << "PX4 bringing vehicle down...\n";
+        
+        }
+        
+        std::cerr << "Vehicle landed under PX4 failsafe control.\n";
+        std::cerr << "Finished (aborted).\n";
+        return 2;
     }
     else
     {
@@ -217,7 +231,7 @@ int main(int argc, char **argv)
             std::cout << "Vehicle is landing...\n";
             sleep_for(seconds(1));
         }
-        
+
     std::cout << "Landed!\n";
 
     sleep_for(seconds(3));

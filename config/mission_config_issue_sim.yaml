@@ -4,5 +4,5 @@ mission:
   speed_m_s: 5.0
 
   relative_waypoints:
-    - { name: END, distance_m: 10, azimuth_deg: 90 }
+    - { name: END, distance_m: 1000, azimuth_deg: 90 }
 

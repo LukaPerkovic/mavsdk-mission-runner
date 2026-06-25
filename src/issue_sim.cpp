@@ -186,7 +186,7 @@ int main(int argc, char **argv)
 
     while (!mission.is_mission_finished().second)
     {
-        const Telemetry::FlightMode m = current_mode.load()
+        const Telemetry::FlightMode m = current_mode.load();
 
         if (m != Telemetry::FlightMode::Mission &&
             m != Telemetry::FlightMode::Takeoff &&

@@ -218,11 +218,10 @@ int main(int argc, char **argv)
             sleep_for(seconds(1));
         }
         
-    }
     std::cout << "Landed!\n";
 
     sleep_for(seconds(3));
     std::cout << "Finished...\n";
-
+    }
     return 0;
 }

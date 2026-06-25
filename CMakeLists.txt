@@ -37,6 +37,23 @@ target_link_libraries(fly_a_square
 	${GeographicLib_LIBRARIES}
 	)
 
+# --- Simulate an issue program ---
+add_executable(issue_sim
+	src/issue_sim.cpp
+	src/helpers/calculate_destination_coordinates.cpp
+	src/helpers/mission_config.cpp
+	)
+target_include_directories(issue_sim PRIVATE
+	${GeographicLib_INCLUDE_DIRS}
+	)
+
+target_link_libraries(issue_sim 
+	MAVSDK::mavsdk
+	yaml-cpp
+	${GeographicLib_LIBRARIES}
+	)
+
+
 
 
 if(NOT MSVC)

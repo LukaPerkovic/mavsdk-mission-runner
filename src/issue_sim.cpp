@@ -51,10 +51,26 @@ int main(int argc, char **argv)
         return 1;
     }
 
+    // Subscribing to Postion, Battery, and Flight mode
     telemetry.subscribe_position(
         [](Telemetry::Position position) {
             std::cout << "Altitude: " << position.relative_altitude_m << " m\n";
         });
+
+    telemetry.subscribe_battery(
+        [](Telemetry::Battery bat) {
+            std:: cout << "Battery level: " << bat.remaining_percent  << "%\n";
+        });
+    
+    std::atomic<bool> failsafe_triggered(false);
+    telemetry.subscribe_flight_mode(
+        [&failsafe_triggered](Telemetry::FlightMode flight_mode) {
+            if (flight_mode != Telemetry::FlightMode::Mission &&
+                flight_mode != Telemetry::FlightMode::Takeoff) {
+                    failsafe_triggered = true;
+                }
+
+        });    
 
     while (!telemetry.health_all_ok())
     {
@@ -167,25 +183,42 @@ int main(int argc, char **argv)
     }
     std::cout << "Mission started.\n";
 
+    bool aborted_by_failsafe = false;
+
     while (!mission.is_mission_finished().second)
-        sleep_for(seconds(1));
-
-    std::cout << "Mission complete!\n";
-
-    std::cout << "Landing...\n";
-    const Action::Result land_result = action.land();
-    if (land_result != Action::Result::Success)
     {
-        std::cerr << "Landing failed: " << land_result << '\n';
-        return 1;
-    }
-
-    while (telemetry.in_air())
-    {
-        std::cout << "Vehicle is landing...\n";
+        if (failsafe_triggered)
+        {
+            aborted_by_failsafe = true;
+            break;
+        }
         sleep_for(seconds(1));
     }
 
+    if (aborted_by_failsafe)
+    {
+        std::cerr << "Mission aborted: failsafe engaged. PX4 took control. \n";
+    }
+    else
+    {
+
+        std::cout << "Mission complete!\n";
+
+        std::cout << "Landing...\n";
+        const Action::Result land_result = action.land();
+        if (land_result != Action::Result::Success)
+        {
+            std::cerr << "Landing failed: " << land_result << '\n';
+            return 1;
+        }
+
+        while (telemetry.in_air())
+        {
+            std::cout << "Vehicle is landing...\n";
+            sleep_for(seconds(1));
+        }
+        
+    }
     std::cout << "Landed!\n";
 
     sleep_for(seconds(3));

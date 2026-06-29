@@ -2,6 +2,19 @@
 
 Notes about done work, missed plans, and next targets structured by weeks. Interval for preceeding week marked on each Sunday
 
+## 28.06.2026.
+
+### What shipped
+- New script, issue_sim.cpp which simulated long distance travel
+- Battery param change in QGC
+- Error handling in script when failure happens
+
+### What slipped
+- The goal was to approach and handle failures, however, it was later discovered that drone's internal system, OS (PX4 in this case) has it's own failure handling, and this should not be interfered with. Thus, what I could do is just handle the script so it accounts for this failure, and adjust it's mission states accordingly.
+
+### Next target
+- Produce logs
+
 ## 21.06.2026.
 
 ### What shipped

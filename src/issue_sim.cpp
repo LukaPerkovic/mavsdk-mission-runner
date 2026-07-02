@@ -10,6 +10,8 @@
 #include <thread>
 
 #include "data_models/coordinates.hpp"
+
+#include "helpers/logger.hpp"
 #include "helpers/calculate_destination_coordinates.hpp"
 #include "helpers/mission_config.hpp"
 
@@ -44,6 +46,8 @@ int main(int argc, char **argv)
     auto telemetry = Telemetry{system.value()};
     auto action = Action{system.value()};
 
+    Logger logger("logs/telemetry.csv");
+
     const auto set_rate_result = telemetry.set_rate_position(5.0);
     if (set_rate_result != Telemetry::Result::Success)
     {
@@ -53,13 +57,17 @@ int main(int argc, char **argv)
 
     // Subscribing to Postion, Battery, and Flight mode
     telemetry.subscribe_position(
-        [](Telemetry::Position position) {
+        [&logger](Telemetry::Position position) {
             std::cout << "Altitude: " << position.relative_altitude_m << " m\n";
+
+            Coords coords{ position.latitude_deg, position.longitude_deg };
+            logger.update_position(coords, position.relative_altitude_m);
         });
 
     telemetry.subscribe_battery(
-        [](Telemetry::Battery bat) {
+        [&logger](Telemetry::Battery bat) {
             std:: cout << "Battery level: " << bat.remaining_percent  << "%\n";
+            logger.update_battery(bat.remaining_percent);
         });
     
     std::atomic<Telemetry::FlightMode> current_mode{
@@ -193,6 +201,7 @@ int main(int argc, char **argv)
             m != Telemetry::FlightMode::Unknown)
         {
             std::cerr << "Unknown flight mode during missions: " << m << '\n';
+            aborted_by_failsafe = true;
         }
 
         sleep_for(seconds(1));
@@ -206,6 +215,8 @@ int main(int argc, char **argv)
         while (telemetry.in_air())
         {
             std::cout << "PX4 bringing vehicle down...\n";
+            sleep_for(seconds(1));
+
         
         }
         

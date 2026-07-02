@@ -11,6 +11,7 @@ list(APPEND CMAKE_MODULE_PATH "/usr/share/cmake/geographiclib")
 find_package(MAVSDK REQUIRED)
 find_package(yaml-cpp REQUIRED)
 find_package(GeographicLib REQUIRED)
+find_package(Threads REQUIRED)
 
 # --- Take off and land program ---
 add_executable(takeoff_and_land
@@ -42,6 +43,7 @@ add_executable(issue_sim
 	src/issue_sim.cpp
 	src/helpers/calculate_destination_coordinates.cpp
 	src/helpers/mission_config.cpp
+	src/helpers/logger.cpp
 	)
 target_include_directories(issue_sim PRIVATE
 	${GeographicLib_INCLUDE_DIRS}
@@ -51,6 +53,7 @@ target_link_libraries(issue_sim
 	MAVSDK::mavsdk
 	yaml-cpp
 	${GeographicLib_LIBRARIES}
+	Threads::Threads
 	)
 
 

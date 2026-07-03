@@ -22,8 +22,8 @@ jobs:
 
       - name: Install MAVSDK
         run: |
-          wget https://github.com/mavlink/MAVSDK/releases/download/v3.6.0/libmavsdk-dev_3.6.0_ubuntu22.04_amd64.deb
-          sudo dpkg -i libmavsdk-dev_3.6.0_ubuntu22.04_amd64.deb || sudo apt-get install -f -y
+          wget https://github.com/mavlink/MAVSDK/releases/download/v2.12.2/libmavsdk-dev_2.12.2_ubuntu22.04_amd64.deb
+          sudo dpkg -i libmavsdk-dev_2.12.2_ubuntu22.04_amd64.deb || sudo apt-get install -f -y
       
       - name: Debug — inspect environment
         run: |
@@ -45,7 +45,7 @@ jobs:
           echo "=== CMake cache: MAVSDK ==="
           grep -i mavsdk build/CMakeCache.txt || true
         continue-on-error: true
-        
+
       - name: Configure
         run: cmake -B build -S .
 

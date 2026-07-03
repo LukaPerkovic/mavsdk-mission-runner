@@ -35,6 +35,17 @@ jobs:
           find / -iname "*mavsdk*.cmake" 2>/dev/null || true
         continue-on-error: true
 
+      - name: Debug — MAVSDK install layout & target props
+        run: |
+          echo "=== headers ==="
+          ls /usr/include/mavsdk 2>/dev/null | head
+          find / -name "mavsdk.hpp" 2>/dev/null
+          echo "=== MAVSDKTargets.cmake (relevant lines) ==="
+          grep -nE "INTERFACE_INCLUDE_DIRECTORIES|IMPORTED_LOCATION|add_library" /usr/lib/cmake/MAVSDK/MAVSDKTargets*.cmake
+          echo "=== CMake cache: MAVSDK ==="
+          grep -i mavsdk build/CMakeCache.txt || true
+        continue-on-error: true
+        
       - name: Configure
         run: cmake -B build -S .
 

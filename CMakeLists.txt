@@ -33,13 +33,13 @@ target_link_libraries(mission_lib PUBLIC
 
 # --- Executables ---
 add_executable(takeoff_and_land	src/takeoff_and_land.cpp)
-target_link_libraries(takeoff_and_land MAVSDK::mavsdk)
+target_link_libraries(takeoff_and_land PRIVATE MAVSDK::mavsdk)
 
 add_executable(fly_a_square	src/fly_a_square.cpp)
-target_link_libraries(takeoff_and_land MAVSDK::mavsdk mission_lib)
+target_link_libraries(fly_a_square PRIVATE MAVSDK::mavsdk mission_lib)
 
 add_executable(issue_sim src/fly_a_square.cpp)
-target_link_libraries(takeoff_and_land MAVSDK::mavsdk mission_lib)
+target_link_libraries(issue_sim PRIVATE MAVSDK::mavsdk mission_lib)
 
 
 if(NOT MSVC)
@@ -66,6 +66,10 @@ if(BUILD_TESTING)
         tests/test_mission_config.cpp
     )
     target_link_libraries(unit_tests PRIVATE mission_lib Catch2::Catch2WithMain)
+
+    target_compile_definitions(unit_tests PRIVATE
+        FIXTURES_DIR="${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures"
+    )
 
     list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
     include(Catch)

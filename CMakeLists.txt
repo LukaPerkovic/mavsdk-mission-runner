@@ -13,55 +13,61 @@ find_package(yaml-cpp REQUIRED)
 find_package(GeographicLib REQUIRED)
 find_package(Threads REQUIRED)
 
-# --- Take off and land program ---
-add_executable(takeoff_and_land
-	src/takeoff_and_land.cpp
-	)
-target_link_libraries(takeoff_and_land
-	MAVSDK::mavsdk
-	)
 
-
-# --- Fly a square program ---
-add_executable(fly_a_square
-	src/fly_a_square.cpp
+add_library(mission_lib
 	src/helpers/calculate_destination_coordinates.cpp
 	src/helpers/mission_config.cpp
-	)
-target_include_directories(fly_a_square PRIVATE
+    src/helpers/logger.cpp
+)
+
+target_include_directories(mission_lib PUBLIC
 	${GeographicLib_INCLUDE_DIRS}
-	)
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
+)
 
-target_link_libraries(fly_a_square 
-	MAVSDK::mavsdk
-	yaml-cpp
-	${GeographicLib_LIBRARIES}
-	)
-
-# --- Simulate an issue program ---
-add_executable(issue_sim
-	src/issue_sim.cpp
-	src/helpers/calculate_destination_coordinates.cpp
-	src/helpers/mission_config.cpp
-	src/helpers/logger.cpp
-	)
-target_include_directories(issue_sim PRIVATE
-	${GeographicLib_INCLUDE_DIRS}
-	)
-
-target_link_libraries(issue_sim 
-	MAVSDK::mavsdk
+target_link_libraries(mission_lib PUBLIC
 	yaml-cpp
 	${GeographicLib_LIBRARIES}
 	Threads::Threads
-	)
+)
 
+# --- Executables ---
+add_executable(takeoff_and_land	src/takeoff_and_land.cpp)
+target_link_libraries(takeoff_and_land MAVSDK::mavsdk)
 
+add_executable(fly_a_square	src/fly_a_square.cpp)
+target_link_libraries(takeoff_and_land MAVSDK::mavsdk mission_lib)
+
+add_executable(issue_sim src/fly_a_square.cpp)
+target_link_libraries(takeoff_and_land MAVSDK::mavsdk mission_lib)
 
 
 if(NOT MSVC)
-	add_compile_options(takeoff_and_land PRIVATE -Wall -Wextra)
-else()
-	add_compile_options(takeoff_and_land PRIVATE /W2)
+	foreach(tgt takeoff_and_land fly_a_square issue_sim mission_lib)
+		target_compile_options(${tgt} PRIVATE -Wall -Wextra)
+	endforeach()
 endif()
 
+
+# --- Tests ---
+option(BUILD_TESTING "Build tests" ON)
+if(BUILD_TESTING)
+    enable_testing()
+    include(FetchContent)
+    FetchContent_Declare(
+        Catch2
+        GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+        GIT_TAG v3.5.2
+    )
+    FetchContent_MakeAvailable(Catch2)
+
+    add_executable(unit_tests
+        tests/test_destination.cpp
+        tests/test_mission_config.cpp
+    )
+    target_link_libraries(unit_tests PRIVATE mission_lib Catch2::Catch2WithMain)
+
+    list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
+    include(Catch)
+    catch_discover_tests(unit_tests)
+endif()

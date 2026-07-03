@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            cmake g++ \
+            libyaml-cpp-dev \
+            libgeographic-dev
+
+      - name: Install MAVSDK
+        run: |
+          wget https://github.com/mavlink/MAVSDK/releases/download/v3.6.0/libmavsdk-dev_3.6.0_ubuntu22.04_amd64.deb
+          sudo dpkg -i libmavsdk-dev_3.6.0_ubuntu22.04_amd64.deb || sudo apt-get install -f -y
+      
+      - name: Debug — inspect environment
+        run: |
+          echo "=== GeographicLib package ==="
+          dpkg -S GeographicLib/Geodesic.hpp 2>/dev/null || echo "not found via dpkg"
+          echo "=== GeographicLib cmake files ==="
+          find / -iname "*eographic*.cmake" 2>/dev/null || true
+          echo "=== MAVSDK cmake files ==="
+          find / -iname "*mavsdk*.cmake" 2>/dev/null || true
+        continue-on-error: true
+
+      - name: Configure
+        run: cmake -B build -S .
+
+      - name: Build
+        run: cmake --build build --parallel
+
+      # - name: Test
+      #   run: ctest --test-dir build --output-on-failure

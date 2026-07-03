@@ -1,0 +1,12 @@
+mission:
+  navigation_mode: relative
+  takeoff_altitude_m: 5.0
+  speed_m_s: 3.0
+  relative_waypoints:
+    - name: A
+      distance_m: 0.0
+      azimuth_deg: 0.0
+    - name: B
+      distance_m: 10.0
+      azimuth_deg: 90.0
+  absolute_waypoints: []

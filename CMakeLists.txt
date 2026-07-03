@@ -9,11 +9,19 @@ project(mavsdk-mission-runner)
 list(APPEND CMAKE_MODULE_PATH "/usr/share/cmake/geographiclib")
 
 find_package(MAVSDK REQUIRED)
-include_directories(${MAVSDK_INCLUDE_DIRS})
 find_package(yaml-cpp REQUIRED)
 find_package(GeographicLib REQUIRED)
 find_package(Threads REQUIRED)
 
+
+# MAVSDK fallback
+get_target_property(MAVSDK_INCLUDE_DIRS MAVSDK::mavsdk INTERFACE_INCLUDE_DIRECTORIES)
+
+if(NOT MAVSDK_INCLUDE_DIRS)
+    set(MAVSDK_INCLUDE_DIRS "/usr/include")
+endif()
+
+include_directories(${MAVSDK_INCLUDE_DIRS})
 
 add_library(mission_lib
 	src/helpers/calculate_destination_coordinates.cpp

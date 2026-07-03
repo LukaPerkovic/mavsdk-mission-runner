@@ -22,9 +22,8 @@ jobs:
 
       - name: Install MAVSDK
         run: |
-          sudo apt-get remove -y libmavsdk-dev libmavsdk2 libmavsdk3 2>/dev/null || true
           wget -q https://github.com/mavlink/MAVSDK/releases/download/v2.12.2/libmavsdk-dev_2.12.2_ubuntu22.04_amd64.deb
-          sudo apt-get install -y ./libmavsdk-dev_2.12.2_ubuntu22.04_amd64.deb
+          sudo apt-get install -y ./libmavsdk-dev_3.15.0_ubuntu22.04_amd64.deb
       
       - name: Debug — inspect environment
         run: |

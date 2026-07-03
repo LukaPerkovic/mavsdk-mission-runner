@@ -11,8 +11,8 @@
 
 #include "data_models/coordinates.hpp"
 
-#include "helpers/logger.hpp"
 #include "helpers/calculate_destination_coordinates.hpp"
+#include "helpers/logger.hpp"
 #include "helpers/mission_config.hpp"
 
 using namespace mavsdk;
@@ -57,27 +57,27 @@ int main(int argc, char **argv)
 
     // Subscribing to Postion, Battery, and Flight mode
     telemetry.subscribe_position(
-        [&logger](Telemetry::Position position) {
+        [&logger](Telemetry::Position position)
+        {
             std::cout << "Altitude: " << position.relative_altitude_m << " m\n";
 
-            Coords coords{ position.latitude_deg, position.longitude_deg };
+            Coords coords{position.latitude_deg, position.longitude_deg};
             logger.update_position(coords, position.relative_altitude_m);
         });
 
     telemetry.subscribe_battery(
-        [&logger](Telemetry::Battery bat) {
-            std:: cout << "Battery level: " << bat.remaining_percent  << "%\n";
+        [&logger](Telemetry::Battery bat)
+        {
+            std::cout << "Battery level: " << bat.remaining_percent << "%\n";
             logger.update_battery(bat.remaining_percent);
         });
-    
+
     std::atomic<Telemetry::FlightMode> current_mode{
         Telemetry::FlightMode::Unknown};
 
-
     telemetry.subscribe_flight_mode(
-        [&current_mode](Telemetry::FlightMode flight_mode) {
-            current_mode = flight_mode;
-        });    
+        [&current_mode](Telemetry::FlightMode flight_mode)
+        { current_mode = flight_mode; });
 
     while (!telemetry.health_all_ok())
     {
@@ -210,16 +210,15 @@ int main(int argc, char **argv)
     if (aborted_by_failsafe)
     {
         std::cerr << "Mission aborted: failsafe engaged. PX4 took control. \n";
-        std::cerr << "Monitoring until the vehicle is safely on the ground...\n";
-        
+        std::cerr
+            << "Monitoring until the vehicle is safely on the ground...\n";
+
         while (telemetry.in_air())
         {
             std::cout << "PX4 bringing vehicle down...\n";
             sleep_for(seconds(1));
-
-        
         }
-        
+
         std::cerr << "Vehicle landed under PX4 failsafe control.\n";
         std::cerr << "Finished (aborted).\n";
         return 2;
@@ -243,10 +242,10 @@ int main(int argc, char **argv)
             sleep_for(seconds(1));
         }
 
-    std::cout << "Landed!\n";
+        std::cout << "Landed!\n";
 
-    sleep_for(seconds(3));
-    std::cout << "Finished...\n";
+        sleep_for(seconds(3));
+        std::cout << "Finished...\n";
     }
     return 0;
 }

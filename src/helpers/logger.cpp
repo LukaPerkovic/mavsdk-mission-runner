@@ -1,19 +1,17 @@
-#include <string>
+#include <atomic>
+#include <chrono>
 #include <fstream>
 #include <mutex>
-#include <atomic>
-#include <thread>
 #include <stdexcept>
-#include <chrono>
+#include <string>
+#include <thread>
 
-#include "logger.hpp"
 #include "../data_models/coordinates.hpp"
 #include "../data_models/log_record.hpp"
+#include "logger.hpp"
 
-
-Logger::Logger(const std::string& log_filepath)
-    : m_file{log_filepath},
-      m_should_stop{false}
+Logger::Logger(const std::string &log_filepath)
+    : m_file{log_filepath}, m_should_stop{false}
 {
 
     if (!m_file.is_open())
@@ -35,7 +33,6 @@ Logger::~Logger()
         m_thread.join();
 }
 
-
 void Logger::update_position(Coords coords, double rel_alt)
 {
     std::lock_guard<std::mutex> guard(m_mutex);
@@ -53,11 +50,11 @@ void Logger::update_battery(float remaining)
 void Logger::run()
 {
     using namespace std::chrono_literals;
-    
+
     while (!m_should_stop)
     {
         LogRecord snapshot;
-        
+
         {
             std::lock_guard<std::mutex> guard(m_mutex);
             snapshot = m_latest;
@@ -67,13 +64,10 @@ void Logger::run()
         std::chrono::duration<double> elapsed = now - m_start_time;
         snapshot.time_s = elapsed.count();
 
-        m_file << snapshot.time_s << ","
-               << snapshot.position.latitude << "," 
-               << snapshot.position.longitude << "," 
-               << snapshot.rel_alt_m << "," 
-               << snapshot.battery_pct << "\n";
-        
+        m_file << snapshot.time_s << "," << snapshot.position.latitude << ","
+               << snapshot.position.longitude << "," << snapshot.rel_alt_m
+               << "," << snapshot.battery_pct << "\n";
+
         std::this_thread::sleep_for(200ms);
-               
     }
 }

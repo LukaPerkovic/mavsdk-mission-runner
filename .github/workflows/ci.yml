@@ -22,21 +22,11 @@ jobs:
 
       - name: Install MAVSDK from source
         run: |
+          set -euxo pipefail
           git clone --depth 1 --branch v3.15.0 https://github.com/mavlink/MAVSDK.git
           cd MAVSDK
           git submodule update --init --recursive
-
-          # Handle both repo layouts: top-level CMakeLists vs cpp/ subdir
-          if [ -f CMakeLists.txt ] && grep -qi "project" CMakeLists.txt; then
-            SRC_DIR="."
-          elif [ -d cpp ]; then
-            SRC_DIR="cpp"
-          else
-            echo "Cannot find MAVSDK CMake source dir"; exit 1
-          fi
-          echo "Using MAVSDK source dir: $SRC_DIR"
-
-          cmake -B build -S "$SRC_DIR" \
+          cmake -B build -S . \
             -DCMAKE_BUILD_TYPE=Release \
             -DBUILD_SHARED_LIBS=ON \
             -DBUILD_MAVSDK_SERVER=OFF \
@@ -44,6 +34,9 @@ jobs:
           cmake --build build --parallel 2
           sudo cmake --build build --target install
           sudo ldconfig
+          echo "=== verify headers actually installed ==="
+          find /usr/local/include -name 'mavsdk.hpp'
+          ls -la /usr/local/include/mavsdk/ | head
 
       - name: Debug — inspect environment
         run: |

@@ -1,0 +1,8 @@
+mission:
+  navigation_mode: relative
+  takeoff_altitude_m: 50.0
+  speed_m_s: 5.0
+
+  relative_waypoints:
+    - { name: END, distance_m: 1000, azimuth_deg: 90 }
+

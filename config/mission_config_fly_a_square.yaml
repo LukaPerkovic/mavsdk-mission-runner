@@ -1,0 +1,17 @@
+mission:
+  navigation_mode: relative
+  takeoff_altitude_m: 5.0
+  speed_m_s: 2.0
+
+  relative_waypoints:
+    - { name: A, distance_m: 0, azimuth_deg: 0 }
+    - { name: B, distance_m: 10, azimuth_deg: 90 }
+    - { name: C, distance_m: 10, azimuth_deg: 180 }
+    - { name: D, distance_m: 10, azimuth_deg: 270 }
+
+  absolute_waypoints:
+    - { name: A, latitude_deg: 47.398376, longitude_deg:  8.547353 }
+    - { name: B, latitude_deg: 47.398310, longitude_deg:  8.547538 } 
+    - { name: C, latitude_deg: 47.398449, longitude_deg:  8.547664 }
+    - { name: D, latitude_deg: 47.398512, longitude_deg:  8.547433 }
+    - { name: A, latitude_deg: 47.398376, longitude_deg:  8.547353 }

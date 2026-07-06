@@ -5,7 +5,7 @@ TEST_CASE("Load mission config fields correctly")
 {
     const std::string path = std::string(FIXTURES_DIR) + "/mission_test.yaml";
     
-    MissionConfig cfg = load_mission_config("tests/fixtures/mission_test.yaml");
+    MissionConfig cfg = load_mission_config(path);
 
     REQUIRE(cfg.navigation_mode == "relative");
     REQUIRE(cfg.takeoff_altitude_m == 5.0);

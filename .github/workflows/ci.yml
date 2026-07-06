@@ -55,15 +55,17 @@ jobs:
           find / -iname "*mavsdk*.cmake" 2>/dev/null || true
         continue-on-error: true
 
-      - name: Debug — MAVSDK install layout & target props
+      - name: Debug — what did MAVSDK actually install
         run: |
-          echo "=== headers ==="
-          ls /usr/include/mavsdk 2>/dev/null | head
-          find / -name "mavsdk.hpp" 2>/dev/null
-          echo "=== MAVSDKTargets.cmake (relevant lines) ==="
-          grep -nE "INTERFACE_INCLUDE_DIRECTORIES|IMPORTED_LOCATION|add_library" /usr/lib/cmake/MAVSDK/MAVSDKTargets*.cmake
-          echo "=== CMake cache: MAVSDK ==="
-          grep -i mavsdk build/CMakeCache.txt || true
+          echo "=== all mavsdk.hpp anywhere ==="
+          find / -name 'mavsdk.hpp' 2>/dev/null
+          echo "=== all mavsdk.h anywhere ==="
+          find / -name 'mavsdk.h' 2>/dev/null
+          echo "=== contents of include dirs ==="
+          ls -la /usr/local/include/mavsdk/ 2>/dev/null | head
+          ls -la /usr/include/mavsdk/ 2>/dev/null | head
+          echo "=== which MAVSDKConfig will be found ==="
+          find / -name 'MAVSDKConfig.cmake' 2>/dev/null
         continue-on-error: true
 
       - name: Debug — MAVSDK version installed
@@ -73,6 +75,12 @@ jobs:
 
       - name: Configure
         run: cmake -B build -S .
+
+      - name: Debug — resolved MAVSDK include dirs
+        run: |
+          grep -i mavsdk build/CMakeCache.txt || true
+          # print the imported target's include dirs
+          cat build/CMakeFiles/CMakeError.log 2>/dev/null | tail -50 || true
 
       - name: Build
         run: cmake --build build --parallel

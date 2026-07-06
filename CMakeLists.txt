@@ -14,15 +14,6 @@ find_package(GeographicLib REQUIRED)
 find_package(Threads REQUIRED)
 
 
-# MAVSDK fallback
-get_target_property(MAVSDK_INCLUDE_DIRS MAVSDK::mavsdk INTERFACE_INCLUDE_DIRECTORIES)
-
-if(NOT MAVSDK_INCLUDE_DIRS)
-    set(MAVSDK_INCLUDE_DIRS "/usr/include")
-endif()
-
-include_directories(${MAVSDK_INCLUDE_DIRS})
-
 add_library(mission_lib
 	src/helpers/calculate_destination_coordinates.cpp
 	src/helpers/mission_config.cpp

@@ -41,7 +41,7 @@ jobs:
             -DBUILD_SHARED_LIBS=ON \
             -DBUILD_MAVSDK_SERVER=OFF \
             -DBUILD_TESTS=OFF
-          cmake --build build --parallel
+          cmake --build build --parallel 2
           sudo cmake --build build --target install
           sudo ldconfig
 

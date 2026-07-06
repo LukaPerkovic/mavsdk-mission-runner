@@ -22,58 +22,12 @@ jobs:
 
       - name: Install MAVSDK from source
         run: |
-          set -euxo pipefail
-          git clone --depth 1 --branch v3.15.0 https://github.com/mavlink/MAVSDK.git
-          cd MAVSDK
-          git submodule update --init --recursive
-          cmake -B build -S cpp \
-            -DCMAKE_BUILD_TYPE=Release \
-            -DBUILD_SHARED_LIBS=ON \
-            -DBUILD_MAVSDK_SERVER=OFF \
-            -DBUILD_TESTS=OFF
-          cmake --build build --parallel 2
-          sudo cmake --build build --target install
-          sudo ldconfig
-          echo "=== verify headers actually installed ==="
-          find /usr/local/include -name 'mavsdk.hpp'
-          ls -la /usr/local/include/mavsdk/ | head
-
-      - name: Debug — inspect environment
-        run: |
-          echo "=== GeographicLib package ==="
-          dpkg -S GeographicLib/Geodesic.hpp 2>/dev/null || echo "not found via dpkg"
-          echo "=== GeographicLib cmake files ==="
-          find / -iname "*eographic*.cmake" 2>/dev/null || true
-          echo "=== MAVSDK cmake files ==="
-          find / -iname "*mavsdk*.cmake" 2>/dev/null || true
-        continue-on-error: true
-
-      - name: Debug — what did MAVSDK actually install
-        run: |
-          echo "=== all mavsdk.hpp anywhere ==="
-          find / -name 'mavsdk.hpp' 2>/dev/null
-          echo "=== all mavsdk.h anywhere ==="
-          find / -name 'mavsdk.h' 2>/dev/null
-          echo "=== contents of include dirs ==="
-          ls -la /usr/local/include/mavsdk/ 2>/dev/null | head
-          ls -la /usr/include/mavsdk/ 2>/dev/null | head
-          echo "=== which MAVSDKConfig will be found ==="
-          find / -name 'MAVSDKConfig.cmake' 2>/dev/null
-        continue-on-error: true
-
-      - name: Debug — MAVSDK version installed
-        run: |
-          dpkg -l | grep -i mavsdk || echo "no mavsdk package"
-          ls /usr/include/mavsdk/ | head -30
+          wget https://github.com/mavlink/MAVSDK/releases/download/v3.15.0/libmavsdk-dev_3.15.0_ubuntu22.04_amd64.deb
+          sudo dpkg -i libmavsdk-dev_3.15.0_ubuntu22.04_amd64.deb
+          sudo apt-get install -f -y
 
       - name: Configure
         run: cmake -B build -S .
-
-      - name: Debug — resolved MAVSDK include dirs
-        run: |
-          grep -i mavsdk build/CMakeCache.txt || true
-          # print the imported target's include dirs
-          cat build/CMakeFiles/CMakeError.log 2>/dev/null | tail -50 || true
 
       - name: Build
         run: cmake --build build --parallel

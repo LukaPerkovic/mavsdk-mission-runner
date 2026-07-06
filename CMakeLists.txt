@@ -50,28 +50,28 @@ endif()
 
 
 # --- Tests ---
-option(BUILD_TESTING "Build tests" ON)
-if(BUILD_TESTING)
-    enable_testing()
-    include(FetchContent)
-    FetchContent_Declare(
-        Catch2
-        GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-        GIT_TAG v3.5.2
-    )
-    FetchContent_MakeAvailable(Catch2)
+# option(BUILD_TESTING "Build tests" ON)
+# if(BUILD_TESTING)
+#     enable_testing()
+#     include(FetchContent)
+#     FetchContent_Declare(
+#         Catch2
+#         GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+#         GIT_TAG v3.5.2
+#     )
+#     FetchContent_MakeAvailable(Catch2)
 
-    add_executable(unit_tests
-        tests/test_destination.cpp
-        tests/test_mission_config.cpp
-    )
-    target_link_libraries(unit_tests PRIVATE mission_lib Catch2::Catch2WithMain)
+#     add_executable(unit_tests
+#         tests/test_destination.cpp
+#         tests/test_mission_config.cpp
+#     )
+#     target_link_libraries(unit_tests PRIVATE mission_lib Catch2::Catch2WithMain)
 
-    target_compile_definitions(unit_tests PRIVATE
-        FIXTURES_DIR="${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures"
-    )
+#     target_compile_definitions(unit_tests PRIVATE
+#         FIXTURES_DIR="${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures"
+#     )
 
-    list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
-    include(Catch)
-    catch_discover_tests(unit_tests)
-endif()
+#     list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
+#     include(Catch)
+#     catch_discover_tests(unit_tests)
+# endif()

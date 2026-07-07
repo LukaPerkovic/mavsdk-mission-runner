@@ -2,6 +2,22 @@
 
 Notes about done work, missed plans, and next targets structured by weeks. Interval for preceeding week marked on each Sunday
 
+## 06.07.2026.
+
+### What shipped
+- Tests: Unit tests for helper functions
+- CI pipeline: Automated via Github Actions
+
+### What slipped
+- Huge discrepancy between local package of MAVSDK vs. what is available in .deb file.
+- Local installation was done by cloning the source. This included the main version which is *kinda* experimental even though in CMake configs was marked as v3.15.0, but it has a big change which is changed headers from `.h` to `.hpp`.
+- `.deb` and explicit source version v3.15.0 still have `.h` header files files
+- The only resolution was scrubbing clean the local source, getting 3.15.0 .`deb` explicitly and chaning library header reference from `.hpp` to `.h`.
+
+### Next target
+- Architecture markdown done
+- Readme completed
+
 ## 28.06.2026.
 
 ### What shipped

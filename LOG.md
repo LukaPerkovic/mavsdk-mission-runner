@@ -1,5 +1,9 @@
 # Weekly Progress Log
 
+Notes about done work, missed plans, and next targets structured by weeks. Interval for preceeding week marked on each Sunday
+
+----
+
 ## 12.07.2026.
 
 ### What shipped

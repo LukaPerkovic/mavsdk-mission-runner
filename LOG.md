@@ -1,5 +1,16 @@
 # Weekly Progress Log
 
+## 12.07.2026.
+
+### What shipped
+- Final architecture and documentation done.
+
+### What slipped
+- Nothing. Writing docs leaves little room for errors apart schedule planning
+
+### Next steps
+- Little break and onward to more ambitious project. Spoilers: ML, Camera, more sims.
+
 Notes about done work, missed plans, and next targets structured by weeks. Interval for preceeding week marked on each Sunday
 
 ## 06.07.2026.

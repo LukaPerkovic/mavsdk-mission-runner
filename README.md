@@ -11,24 +11,18 @@ Has logging capabilities producing `logs/*.csv` which can be analyzed further. I
 
 -----
 
-<br>
-<figure>
-    <img width="600" height="321" alt="relative_fp" src="https://github.com/user-attachments/assets/f2968cf4-f961-4fa8-9890-886d4c713a08" />
-    <figcaption> Image 1: Relative flight path</figcaption>
-</figure>
+<p align="center">
+  <img width="600" alt="relative_fp" src="https://github.com/user-attachments/assets/f2968cf4-f961-4fa8-9890-886d4c713a08" />
+  <br>
+  <em>Image 1: Relative flight path</em>
+</p>
 
-<figure>
-    <img width="600" height="324" alt="absolute_fp" src="https://github.com/user-attachments/assets/f4b6ec3d-fe31-4079-9c0e-2fd7df3b03ba" />
-    <figcaption> Image 2: Absolute flight path</figcaption>
-</figure>
+<p align="center">
+  <img width="600" alt="absolute_fp" src="https://github.com/user-attachments/assets/f4b6ec3d-fe31-4079-9c0e-2fd7df3b03ba" />
+  <br>
+  <em>Image 2: Absolute flight path</em>
+</p>
 
-
-#
-<style>
-figcaption{
-text-align: center;
-}
-</style>
 
 ## Architecture diagram
 
@@ -76,8 +70,8 @@ If all works well, the UAV in the Gazebo simulation will be armed and will take 
 
 `run` prefix scripts accept two arguments that dictate what type of mission will it be.
 
-`./run_square/sh relative` will trigger a relative flight path seen on Image 1. 
-`./run_square/sh absolute` will trigger a absolute flight path seen on Image 2. 
+`./run_square.sh relative` will trigger a relative flight path seen on Image 1. 
+`./run_square.sh absolute` will trigger a absolute flight path seen on Image 2. 
 
 ## What I learned
 - First real contact with C++. Got introduced to key components in drone software and sim areas: QGC, PX4, and MAVLink/MAVSDK.
